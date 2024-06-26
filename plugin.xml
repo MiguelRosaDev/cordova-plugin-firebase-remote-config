@@ -37,5 +37,8 @@
         </config-file>
         <!-- END Edit AndroidManifest.xml -->
 
+        <!-- Hoook to enabled google services if is not enabled in CDV cordova -->
+        <hook type="before_build" src="hooks/android/enableGoogleServicesHook.js" />
+
     </platform>
 </plugin>
