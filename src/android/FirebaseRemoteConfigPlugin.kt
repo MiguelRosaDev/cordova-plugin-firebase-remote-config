@@ -41,18 +41,20 @@ class FirebaseRemoteConfigPlugin : CordovaPlugin(), ConfigUpdateListener {
     }
 
     private fun fetchAndActivateToGetAllKeys() {
-        try {
-            // Fetch and activate the latest configurations
-            firebaseRemoteConfig.fetchAndActivate()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        getAllKeys()
-                    } else {
-                        this.callbackContext?.error(task.exception?.message.toString())
+        cordova.threadPool.execute {
+            try {
+                // Fetch and activate the latest configurations
+                firebaseRemoteConfig.fetchAndActivate()
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            getAllKeys()
+                        } else {
+                            this.callbackContext?.error(task.exception?.message.toString())
+                        }
                     }
-                }
-        } catch (ex: Exception) {
-            this.callbackContext?.error(ex.message)
+            } catch (ex: Exception) {
+                this.callbackContext?.error(ex.message)
+            }
         }
     }
 
@@ -60,38 +62,43 @@ class FirebaseRemoteConfigPlugin : CordovaPlugin(), ConfigUpdateListener {
         cordova.threadPool.execute {
             try {
                 val keys = firebaseRemoteConfig.all
-                val jsonKeys = JSONObject()
+                val jsonArray = JSONArray()
                 for (entry in keys.entries) {
-                    val key: String = entry.key
-                    val value: FirebaseRemoteConfigValue = entry.value
-                    jsonKeys.put(key, value.asString())
+                    val key = entry.key
+                    val value = entry.value.asString()
+                    val jsonObject = JSONObject()
+                    jsonObject.put("key", key)
+                    jsonObject.put("value", value)
+                    jsonArray.put(jsonObject)
                 }
-                val pluginResult = PluginResult(PluginResult.Status.OK, jsonKeys)
+                val pluginResult = PluginResult(PluginResult.Status.OK, jsonArray)
                 pluginResult.keepCallback = true
                 this.callbackContext?.sendPluginResult(pluginResult)
-            } catch (e: java.lang.Exception) {
+            } catch (e: Exception) {
                 this.callbackContext?.error(e.message.toString())
             }
         }
     }
 
     private fun setConfigSettings(args: JSONArray, callbackContext: CallbackContext) {
-        try {
-            val settingsJson = args.getJSONObject(0)
-            val minimumFetchInterval = settingsJson.optLong("minimumFetchInterval", 3600L)
-            val configSettings = FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(minimumFetchInterval)
-                .build()
-            firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        callbackContext.success("Config settings updated")
-                    } else {
-                        callbackContext.error("Failed to update config settings "+task.exception?.message)
+        cordova.threadPool.execute {
+            try {
+                val settingsJson = args.getJSONObject(0)
+                val minimumFetchInterval = settingsJson.optLong("minimumFetchInterval", 3600L)
+                val configSettings = FirebaseRemoteConfigSettings.Builder()
+                    .setMinimumFetchIntervalInSeconds(minimumFetchInterval)
+                    .build()
+                firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            callbackContext.success("Config settings updated")
+                        } else {
+                            callbackContext.error("Failed to update config settings " + task.exception?.message)
+                        }
                     }
-                }
-        } catch (e: Exception) {
-            callbackContext.error("Invalid config settings: ${e.message}")
+            } catch (e: Exception) {
+                callbackContext.error("Invalid config settings: ${e.message}")
+            }
         }
     }
 
