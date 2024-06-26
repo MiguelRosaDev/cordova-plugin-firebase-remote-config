@@ -1,0 +1,17 @@
+{
+  "name": "FirebaseRemoteConfigPlugin",
+  "version": "1.0.0",
+  "description": "",
+  "cordova": {
+    "id": "com.outsystems.experts.firebase.remote.config.plugin",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova"
+  ],
+  "author": "Paulo Cesar Camilo",
+  "license": "ISC"
+}

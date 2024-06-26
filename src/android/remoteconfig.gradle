@@ -1,0 +1,12 @@
+repositories {
+    google()
+    mavenCentral()
+    maven {
+        url 'https://jitpack.io'
+    }
+}
+
+dependencies {
+    // Firebase Remote Config Dependency
+    implementation 'com.google.firebase:firebase-config:22.0.0'
+}
