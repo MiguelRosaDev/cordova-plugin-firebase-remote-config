@@ -7,7 +7,6 @@ import org.json.JSONObject
 
 
 private const val ACTION_GET_ALL_KEYS = "getAllKeys"
-private const val ACTION_SET_CONFIG_SETTINGS = "setConfigSettings"
 
 class FirebaseRemoteConfigPlugin : CordovaPlugin(), ConfigUpdateListener {
 
@@ -29,11 +28,21 @@ class FirebaseRemoteConfigPlugin : CordovaPlugin(), ConfigUpdateListener {
         this.callbackContext = callbackContext
         return when (action) {
             ACTION_GET_ALL_KEYS -> {
-                fetchAndActivateToGetAllKeys()
-                true
-            }
-            ACTION_SET_CONFIG_SETTINGS -> {
-                setConfigSettings(args, callbackContext)
+                try {
+                    val configSettings = FirebaseRemoteConfigSettings.Builder()
+                        .setMinimumFetchIntervalInSeconds(3600L)
+                        .build()
+                    firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                fetchAndActivateToGetAllKeys()
+                            } else {
+                                callbackContext.error("Failed to update config settings " + task.exception?.message)
+                            }
+                        }
+                } catch (e: Exception) {
+                    callbackContext.error("Invalid config settings: ${e.message}")
+                }
                 true
             }
             else -> false
@@ -76,28 +85,6 @@ class FirebaseRemoteConfigPlugin : CordovaPlugin(), ConfigUpdateListener {
                 this.callbackContext?.sendPluginResult(pluginResult)
             } catch (e: Exception) {
                 this.callbackContext?.error(e.message.toString())
-            }
-        }
-    }
-
-    private fun setConfigSettings(args: JSONArray, callbackContext: CallbackContext) {
-        cordova.threadPool.execute {
-            try {
-                val settingsJson = args.getJSONObject(0)
-                val minimumFetchInterval = settingsJson.optLong("minimumFetchInterval", 3600L)
-                val configSettings = FirebaseRemoteConfigSettings.Builder()
-                    .setMinimumFetchIntervalInSeconds(minimumFetchInterval)
-                    .build()
-                firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            callbackContext.success("Config settings updated")
-                        } else {
-                            callbackContext.error("Failed to update config settings " + task.exception?.message)
-                        }
-                    }
-            } catch (e: Exception) {
-                callbackContext.error("Invalid config settings: ${e.message}")
             }
         }
     }
