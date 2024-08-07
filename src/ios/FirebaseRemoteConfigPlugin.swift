@@ -10,7 +10,12 @@ class FirebaseRemoteConfigPlugin: CDVPlugin {
     
     override func pluginInitialize() {
         super.pluginInitialize()
-        //FirebaseApp.configure()
+        
+        // mlrosa - Check if Firebase is already configured
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+        
         remoteConfig = RemoteConfig.remoteConfig()
         
         let settings = RemoteConfigSettings()
