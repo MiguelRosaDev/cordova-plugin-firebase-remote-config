@@ -10,7 +10,7 @@ class FirebaseRemoteConfigPlugin: CDVPlugin {
     
     override func pluginInitialize() {
         super.pluginInitialize()
-        FirebaseApp.configure()
+        //FirebaseApp.configure()
         remoteConfig = RemoteConfig.remoteConfig()
         
         let settings = RemoteConfigSettings()
