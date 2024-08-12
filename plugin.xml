@@ -11,7 +11,7 @@
 
     <platform name="ios">
         
-        <preference name="IOS_FIREBASE_POD_VERSION" default="10.17.0" />
+        <preference name="IOS_FIREBASE_POD_VERSION" default="10.23.0" />
 
         <config-file target="config.xml" parent="/*">
             <feature name="FirebaseRemoteConfigPlugin">
