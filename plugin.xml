@@ -11,7 +11,7 @@
 
     <platform name="ios">
         
-        <preference name="IOS_FIREBASE_POD_VERSION" default="10.23.0" />
+        <preference name="IOS_FIREBASE_POD_VERSION" default="10.29.0" />
 
         <config-file target="config.xml" parent="/*">
             <feature name="FirebaseRemoteConfigPlugin">
@@ -27,7 +27,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="Firebase/RemoteConfig" spec="$IOS_FIREBASE_POD_VERSION" />
+                <pod name="FirebaseRemoteConfig" spec="$IOS_FIREBASE_POD_VERSION" />
             </pods>
         </podspec>
 
