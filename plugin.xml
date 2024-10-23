@@ -32,8 +32,7 @@
         </podspec>
 
         <hook type="before_plugin_install" src="hooks/ios/install_prerequisites.js"/>
-	<!--<hook type="after_plugin_add" src="hooks/ios/add_swift_support.js" />-->
-	<dependency id="cordova-plugin-add-swift-support" url="https://github.com/OutSystems/cordova-plugin-add-swift-support.git#2.0.3-OS1"/>
+	<hook type="after_plugin_add" src="hooks/ios/add_swift_support.js" />
 
     </platform>
 
