@@ -1,5 +1,6 @@
 import Foundation
-import Firebase
+//import Firebase
+import FirebaseRemoteConfig
 
 @objc(FirebaseRemoteConfigPlugin)
 class FirebaseRemoteConfigPlugin: CDVPlugin {
